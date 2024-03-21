@@ -19,5 +19,5 @@ def laba1_post():
         color=color, text=text, space=space)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='172.17.5.139', port=5000)
     url_for('static', filename='gradesdatabase.dumpfilesql')

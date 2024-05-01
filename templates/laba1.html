@@ -11,19 +11,23 @@
 	<p>Программа получает текст и цвет текста, выводит текст в выбранном цвете и количество пробелов в тексте.</p>
 	<form method="POST">
 		<label>Выберите цвет текста</label><br>
-		<input type="radio" name="color" value="black" id="black">
+		<input type="radio" name="color" value="black" id="black" {% if request.cookies.get('fontcolor') == 'black' %} checked {% endif %}>
 		<label for="black">Black</label><br>
-		<input type="radio" name="color" value="red" id="red">
+		<input type="radio" name="color" value="red" id="red" {% if request.cookies.get('fontcolor') == 'red' %} checked {% endif %}>
 		<label for="red">Red</label><br>
-		<input type="radio" name="color" value="green" id="green">
+		<input type="radio" name="color" value="green" id="green" {% if request.cookies.get('fontcolor') == 'green' %} checked {% endif %}>
 		<label for="green">Green</label><br>
-		<input type="radio" name="color" value="blue" id="blue">
+		<input type="radio" name="color" value="blue" id="blue" {% if request.cookies.get('fontcolor') == 'blue' %} checked {% endif %}>
 		<label for="blue">Blue</label><br>
 
 		<label for="text">Введите текст для отправки:</label><br>
-		<input type="text" name="text"><br>
+		<input type="text" name="text" value="hello world"><br>
 
-		<input type="submit" value="Отправить">
+		<label for="text">Введите размер шрифта:</label><br>
+		<input type="number" name="fontsize" min=10 max=100 value={{request.cookies.get('fontsize')}} ><br>
+
+		<input type="submit" value="Отправить данные">
+		<a href="clear_cookies"><input type="button" value="Очистить куки"></a>
 	</form>
 </body>
 </html>

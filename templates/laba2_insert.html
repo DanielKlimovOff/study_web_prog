@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Лаба 2 Обновление</title>
+</head>
+<body>
+	<a href="laba2"><h4>Вернуться на таблицу</h4></a>
+	<form method="POST">
+		<label>student</label><br>
+		<select id="student" name="student">
+			{%for stud in students%}
+			<option value="{{stud}}">{{stud}}</option>
+			{%endfor%}
+		</select><br>
+
+		<label>course</label><br>
+		<select id="course" name="course">
+			{%for course in courses%}
+			<option value="{{course}}">{{course}}</option>
+			{%endfor%}
+		</select><br>
+
+		<label>ticket_number</label><br>
+		<input type="number" name="ticket_number" min=1 max=100 value=1><br>
+
+		<label>grade</label><br>
+		<input type="number" name="grade" min=1 max=100 value=100><br>
+
+		<input type="submit" value="Отправить данные">
+	</form>
+</body>
+</html>

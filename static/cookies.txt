@@ -1,0 +1,2 @@
+fontsize: 60
+fontcolor: red

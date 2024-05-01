@@ -3,11 +3,18 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Климов Лаба 1 Результат</title>
+	<title>Лаба 1 Результат</title>
+	<style>
+		p {
+			font-size: {{fontsize}}px;
+			color: {{fontcolor}};
+		}
+	</style>
 </head>
 <body>
 	<a href="/"><h4>Вернуться на главную страницу</h4></a>
-	<font color="{{color}}"><p>{{text}}</p></font>
+	<p>{{text}}</p>
 	<h3>В этом тексте {{space}} раз(-а) встречается пробел</h3>
+	<a href="save_to_file"><input type="button" value="Сохранить параметры текста в файл"></a>
 </body>
 </html>

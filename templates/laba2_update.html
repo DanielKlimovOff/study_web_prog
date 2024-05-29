@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Лаба 2 Вставка</title>
+	<title>Лаба 2 Обновление</title>
 </head>
 <body>
 	<a href="laba2"><h4>Вернуться на таблицу</h4></a>
@@ -11,22 +11,22 @@
 		<label>student</label><br>
 		<select id="student" name="student">
 			{%for stud in students%}
-			<option value="{{stud}}">{{stud}}</option>
+			<option value="{{stud}}" {% if stud == stud_id %} selected {% endif %}>{{stud}}</option>
 			{%endfor%}
 		</select><br>
 
 		<label>course</label><br>
 		<select id="course" name="course">
 			{%for course in courses%}
-			<option value="{{course}}">{{course}}</option>
+			<option value="{{course}}" {% if course == course_id %} selected {% endif %}>{{course}}</option>
 			{%endfor%}
 		</select><br>
 
 		<label>ticket_number</label><br>
-		<input type="number" name="ticket_number" min=1 max=100 value=1><br>
+		<input type="number" name="ticket_number" min=1 max=100 value={{ticket_number_id}}><br>
 
 		<label>grade</label><br>
-		<input type="number" name="grade" min=1 max=100 value=100><br>
+		<input type="number" name="grade" min=1 max=100 value={{grade_id}}><br>
 
 		<input type="submit" value="Отправить данные">
 	</form>

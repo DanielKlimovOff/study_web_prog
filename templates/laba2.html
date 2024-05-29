@@ -29,9 +29,16 @@
   				<td>{{row[2]}}</td>
   				<td>{{row[3]}}</td>
   				<td>{{row[4]}}</td>
+  				<td><a href="laba2_update{{row[0]}}"><input type="button" value="Редактировать"></a></td>
+  				<td><a href="laba2_delete{{row[0]}}"><input type="button" value="Удалить"></a></td>
   			</tr>	
 		{%endfor%}
 	</table>
 	<a href="laba2_insert"><input type="button" value="Вставка"></a>
+	<form method="POST">
+		<label>условия вывода (не пишите пожалуйста команды удаления бд)</label><br>
+		<input type="text" name="select" value="grade > 20"><br>
+		<input type="submit" value="выборка с условием">
+	</form>
 </body>
 </html>

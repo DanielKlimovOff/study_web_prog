@@ -39,7 +39,7 @@ def clear_cookies():
 @app.get('/save_to_file')
 def save_to_file():
     f = open('static/cookies.txt', 'w')
-    f.write(f'fontsize: {request.cookies.get('fontsize')}\nfontcolor: {request.cookies.get('fontcolor')}')
+    f.write(f'fontsize: {request.cookies.get("fontsize")}\nfontcolor: {request.cookies.get("fontcolor")}')
     f.close()
     return send_file('static/cookies.txt', as_attachment=True)
 

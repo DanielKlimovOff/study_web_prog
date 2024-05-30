@@ -46,15 +46,36 @@ def save_to_file():
 
 @app.get('/laba2')
 def laba2():
+    if not request.cookies.get('laba2_hash'):
+        response = make_response('', 301)
+        response.headers['Location'] = 'laba2_enter'
+        return response
+
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
     cursor.execute('select grades.id, students.name, courses.name as course, grades.ticket_number, grades.grade from grades join students on grades.student = students.id join courses on grades.course = courses.id;')
     table = cursor.fetchall()
+    myhash = request.cookies.get('laba2_hash')
+    cursor.execute(f'select login, role from users where hash={myhash};')
+    data = cursor.fetchone()
+    login = data[0]
+    role = data[1]
+
+    if role == 0:
+        role = 'Пользователь'
+    elif role == 1:
+        role = 'Администратор'
+    elif role == 2:
+        role = 'Владелец БД'
+    else:
+        role = 'Аноним'
+
     connection.commit()
     connection.close()
 
-    response = make_response(render_template('laba2.html', table=table))
+
+    response = make_response(render_template('laba2.html', table=table, login=login, role=role))
     return response
 
 
@@ -62,6 +83,13 @@ def laba2():
 def laba2_insert_get():
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
+
+    myhash = request.cookies.get('laba2_hash')
+    cursor.execute(f'select role from users where hash={myhash};')
+    role = cursor.fetchone()[0]
+
+    if role < 1:
+        return 'Маловато прав у вас'
 
     cursor.execute('select id from students order by id;')
     students = cursor.fetchall()
@@ -82,15 +110,19 @@ def laba2_insert_post():
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
+    myhash = request.cookies.get('laba2_hash')
+    cursor.execute(f'select role from users where hash={myhash};')
+    role = cursor.fetchone()[0]
+
+    if role < 1:
+        return 'Маловато прав у вас'
+
     cursor.execute('select max(id) from grades;')
     max_id_grade = cursor.fetchone()[0]
-    print(max_id_grade)
     student = request.form['student']
     course = request.form['course']
     ticket_number = request.form['ticket_number']
     grade = request.form['grade']
-    print(f'insert into grades values ({max_id_grade + 1}, {student}, {course}, {ticket_number}, {grade});')
-
     cursor.execute(f'insert into grades values ({max_id_grade + 1}, {student}, {course}, {ticket_number}, {grade});')
 
     connection.commit()
@@ -102,6 +134,13 @@ def laba2_insert_post():
 def laba2_update_get(grade_id):
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
+
+    myhash = request.cookies.get('laba2_hash')
+    cursor.execute(f'select role from users where hash={myhash};')
+    role = cursor.fetchone()[0]
+
+    if role < 1:
+        return 'Маловато прав у вас'
 
     cursor.execute('select id from students order by id;')
     students = cursor.fetchall()
@@ -131,13 +170,17 @@ def laba2_update_post(grade_id):
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
+    myhash = request.cookies.get('laba2_hash')
+    cursor.execute(f'select role from users where hash={myhash};')
+    role = cursor.fetchone()[0]
+
+    if role < 1:
+        return 'Маловато прав у вас'
+
     student = request.form['student']
     course = request.form['course']
     ticket_number = request.form['ticket_number']
     grade = request.form['grade']
-    print(f'update grades set student={student}, course={course}'+
-        'ticket_number={ticket_number}, grade={grade} where id={grade_id} ;')
-
     cursor.execute(f'update grades set student={student}, course={course},'+
         f'ticket_number={ticket_number}, grade={grade} where id={grade_id} ;')
 
@@ -151,6 +194,13 @@ def laba2_delete(grade_id):
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
+    myhash = request.cookies.get('laba2_hash')
+    cursor.execute(f'select role from users where hash={myhash};')
+    role = cursor.fetchone()[0]
+
+    if role < 2:
+        return 'Маловато прав у вас'
+
     cursor.execute(f'delete from grades where id = {grade_id};')
 
 
@@ -161,23 +211,63 @@ def laba2_delete(grade_id):
 
 @app.post('/laba2')
 def laba2_select():
+    if not request.cookies.get('laba2_hash'):
+        response = make_response('', 301)
+        response.headers['Location'] = 'laba2_enter'
+        return response
+
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
     where = request.form['select']
     cursor.execute(f'select grades.id, students.name, courses.name as course, grades.ticket_number, grades.grade from grades join students on grades.student = students.id join courses on grades.course = courses.id where {where};')
     table = cursor.fetchall()
+
+    myhash = request.cookies.get('laba2_hash')
+    cursor.execute(f'select login, role from users where hash={myhash};')
+    data = cursor.fetchone()
+    login = data[0]
+    role = data[1]
+
+    if role == 0:
+        role = 'Пользователь'
+    elif role == 1:
+        role = 'Администратор'
+    elif role == 2:
+        role = 'Владелец БД'
+    else:
+        role = 'Аноним'
+
     connection.commit()
     connection.close()
 
-    response = make_response(render_template('laba2.html', table=table))
+
+    response = make_response(render_template('laba2.html', table=table, login=login, role=role))
     return response
 
 @app.get('/laba2_enter')
 def laba2_enter():
-    # if not request.cookies.get('fontsize'):
-    
     response = make_response(render_template('laba2_enter.html'))
+    if request.cookies.get('laba2_hash'):
+        connection = sqlite3.connect('grades.db')
+        cursor = connection.cursor()
+
+        myhash = request.cookies.get('laba2_hash')
+
+        cursor.execute(f'select * from users where hash={myhash};')
+        logins = cursor.fetchall()
+        print('logins', logins)
+        connection.commit()
+        connection.close()
+
+        if len(logins):
+            response = make_response('', 301)
+            response.headers['Location'] = 'laba2'
+            return response
+        else:
+            for cookie_name in request.cookies:
+                response.set_cookie(cookie_name, '', expires=0)
+    
     return response
 
 
@@ -215,6 +305,7 @@ def laba2_login():
     
     response = make_response('', 301)
     response.headers['Location'] = 'laba2'
+    print(login, logins)
     if login in logins:
         cursor.execute(f'select hash from users where login = "{login}";')
         myhash = cursor.fetchone()[0]
@@ -224,10 +315,18 @@ def laba2_login():
         print('i am pussy')
     connection.commit()
     connection.close()
-    return redirect('laba2')
+    return response
+
+@app.post('/laba2_logout')
+def laba2_logout():
+    print('logout')
+    response = make_response('', 301)
+    response.headers['Location'] = 'laba2_enter'
+    for cookie_name in request.cookies:
+        response.set_cookie(cookie_name, '', expires=0)
+    return response
 
 
 if __name__ == '__main__':
     # app.run(host='172.17.5.139', port=5000)
     app.run(host='127.0.0.1', port=4000)
-    url_for('static', filename='gradesdatabase.dumpfilesql')

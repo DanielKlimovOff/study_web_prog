@@ -14,6 +14,14 @@
 <body>
 	<a href="/"><h4>Вернуться на главную страницу</h4></a>
 	<h1>Лабораторная работа 2</h1>
+
+	<label>Ваш логин: {{login}}</label><br>
+	<label>Ваша роль: {{role}}</label><br>
+
+	<form action="/laba2_logout", method="POST">
+      <button type="submit">Выйти из аккаунта</button>
+    </form>
+	
 	<table>
 		<tr>
 			<th>id</th>

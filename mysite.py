@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, make_response, send_file, redirect
 import sqlite3
 from random import randint
+from PIL import Image, ImageDraw, ImageFont
 
 app = Flask(__name__)
 
@@ -325,6 +326,71 @@ def laba2_logout():
     for cookie_name in request.cookies:
         response.set_cookie(cookie_name, '', expires=0)
     return response
+
+@app.get('/laba3')
+def laba3():
+    response = make_response(render_template('laba3.html'))
+    return response
+
+@app.post('/laba3')
+def laba3_post():
+    type_diagram = request.form['type_diagram']
+    if type_diagram == 'student':
+        connection = sqlite3.connect('grades.db')
+        cursor = connection.cursor()
+
+        cursor.execute('select DISTINCT students.name from grades join students on grades.student = students.id order by students.name;')
+        students = cursor.fetchall()
+        students = [s[0] for s in students]
+        grades = []
+
+        for stud in students:
+            cursor.execute(f'select count(*) from grades join students on grades.student=students.id where students.name = "{stud}";')
+            grades.append(cursor.fetchone()[0])
+
+        print(students, grades)
+
+        connection.commit()
+        connection.close()
+
+        diagram = Image.new('RGB', (120 + 50 * max(grades), 70 * len(students)), 'white')
+        draw = ImageDraw.Draw(diagram)
+        font = ImageFont.truetype("arial.ttf", size=30)
+
+        for i in range(len(students)):
+            draw.rectangle((20, 20 + 70 * i, 50 * grades[i], 50 + 70*i), fill='green')
+            draw.text((20, 20 + 70 * i), str(grades[i]) + ' - ' + students[i], font=font, fill='black')
+
+        diagram.save('static/diagram.jpg')
+    elif type_diagram == 'course':
+        connection = sqlite3.connect('grades.db')
+        cursor = connection.cursor()
+
+        cursor.execute('select DISTINCT courses.name from grades join courses on grades.course = courses.id order by courses.name;')
+        courses = cursor.fetchall()
+        courses = [c[0] for c in courses]
+        grades = []
+
+        for cours in courses:
+            cursor.execute(f'select count(*) from grades join courses on grades.course = courses.id where courses.name = "{cours}";')
+            grades.append(cursor.fetchone()[0])
+
+        print(courses, grades)
+
+        connection.commit()
+        connection.close()
+
+        diagram = Image.new('RGB', (120 + 20 * max(grades), 70 * len(courses)), 'white')
+        draw = ImageDraw.Draw(diagram)
+        font = ImageFont.truetype("arial.ttf", size=30)
+
+        for i in range(len(courses)):
+            draw.rectangle((20, 20 + 70 * i, 20 * grades[i], 50 + 70*i), fill='green')
+            draw.text((20, 20 + 70 * i), str(grades[i]) + ' - ' + courses[i], font=font, fill='black')
+
+        diagram.save('static/diagram.jpg')
+
+    return render_template('laba3_diagram.html')
 
 
 if __name__ == '__main__':

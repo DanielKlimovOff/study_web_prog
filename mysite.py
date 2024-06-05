@@ -2,8 +2,23 @@ from flask import Flask, render_template, request, url_for, make_response, send_
 import sqlite3
 from random import randint
 from PIL import Image, ImageDraw, ImageFont
+from flask_simple_captcha import CAPTCHA
+from flask_ckeditor import CKEditor
+
+YOUR_CONFIG = {
+    'SECRET_CAPTCHA_KEY': 'LONG_KEY',
+    'CAPTCHA_LENGTH': 6,
+    'CAPTCHA_DIGITS': True,
+    'EXPIRE_SECONDS': 600,
+    'BACKGROUND_COLOR': (255, 255, 255),
+    'TEXT_COLOR': (0, 255, 0)
+}
 
 app = Flask(__name__)
+ckeditor = CKEditor(app)
+
+SIMPLE_CAPTCHA = CAPTCHA(config=YOUR_CONFIG)
+app = SIMPLE_CAPTCHA.init_app(app)
 
 @app.route('/')
 def main():
@@ -22,7 +37,7 @@ def laba1():
 @app.post('/laba1')
 def laba1_post():
     fontcolor = request.form['color']
-    text = request.form['text']
+    text = request.form.get('ckeditor')
     space = text.count(' ')
     fontsize = request.form['fontsize']
     response = make_response(render_template('laba1_result.html', 
@@ -329,11 +344,18 @@ def laba2_logout():
 
 @app.get('/laba3')
 def laba3():
-    response = make_response(render_template('laba3.html'))
+    new_captcha_dict = SIMPLE_CAPTCHA.create()
+    response = make_response(render_template('laba3.html', captcha=new_captcha_dict))
     return response
 
 @app.post('/laba3')
 def laba3_post():
+    c_hash = request.form.get('captcha-hash')
+    c_text = request.form.get('captcha-text')
+
+    if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
+        return f'Капча введена неверно'
+
     type_diagram = request.form['type_diagram']
     if type_diagram == 'student':
         connection = sqlite3.connect('grades.db')
@@ -347,8 +369,6 @@ def laba3_post():
         for stud in students:
             cursor.execute(f'select count(*) from grades join students on grades.student=students.id where students.name = "{stud}";')
             grades.append(cursor.fetchone()[0])
-
-        print(students, grades)
 
         connection.commit()
         connection.close()
@@ -396,3 +416,4 @@ def laba3_post():
 if __name__ == '__main__':
     # app.run(host='172.17.5.139', port=5000)
     app.run(host='127.0.0.1', port=4000)
+

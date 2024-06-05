@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Лаба 1</title>
+	{{ ckeditor.load(custom_url=url_for('static', filename='ckeditor/ckeditor.js')) }}
 </head>
 <body>
 	<a href="/"><h4>Вернуться на главную страницу</h4></a>
@@ -21,9 +22,8 @@
 		<label for="blue">Blue</label><br>
 
 		<label for="text">Введите текст для отправки:</label><br>
-		<input type="text" name="text" value="hello world"><br>
-
-		<label for="text">Введите размер шрифта:</label><br>
+		<!-- <input type="text" name="text" value="hello world"><br> -->
+		{{ ckeditor.create(value='Hello World') }} <br>
 		<input type="number" name="fontsize" min=10 max=100 value={{request.cookies.get('fontsize')}} ><br>
 
 		<input type="submit" value="Отправить данные">

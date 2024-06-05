@@ -15,6 +15,8 @@
 			<option value="student">студент</option>
 			<option value="course">курс</option>
 		</select><br>
+		<label>Для получения диаграммы, пройдите капчу:</label><br>
+		{{ captcha_html(captcha) | safe }} <br> 
 		<input type="submit" value="Создать диаграмму">
 	</form>
 </body>

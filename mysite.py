@@ -425,7 +425,7 @@ def laba3_post():
 
         diagram = Image.new('RGB', (120 + 20 * max(grades), 70 * len(courses)), 'white')
         draw = ImageDraw.Draw(diagram)
-        font = ImageFont.truetype("arial.ttf", size=30)
+        font = ImageFont.truetype("static/arial.ttf", size=30)
 
         for i in range(len(courses)):
             draw.rectangle((20, 20 + 70 * i, 20 * grades[i], 50 + 70*i), fill='green')
@@ -484,6 +484,6 @@ def rgr():
     # return render_template("laba4.html")
 
 if __name__ == '__main__':
-    # app.run(host='172.17.5.139', port=5000)
-    app.run(host='127.0.0.1', port=4000)
+    app.run(host='172.17.5.120', port=5000)
+    # app.run(host='127.0.0.1', port=4000)
 

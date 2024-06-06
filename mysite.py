@@ -398,7 +398,7 @@ def laba3_post():
 
         diagram = Image.new('RGB', (120 + 50 * max(grades), 70 * len(students)), 'white')
         draw = ImageDraw.Draw(diagram)
-        font = ImageFont.truetype("arial.ttf", size=30)
+        font = ImageFont.truetype("static/arial.ttf", size=30)
 
         for i in range(len(students)):
             draw.rectangle((20, 20 + 70 * i, 50 * grades[i], 50 + 70*i), fill='green')

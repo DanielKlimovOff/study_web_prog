@@ -24,6 +24,7 @@
 		<label for="text">Введите текст для отправки:</label><br>
 		<!-- <input type="text" name="text" value="hello world"><br> -->
 		{{ ckeditor.create(value='Hello World') }} <br>
+		<label for="text">Введите размер шрифта:</label><br>
 		<input type="number" name="fontsize" min=10 max=100 value={{request.cookies.get('fontsize')}} ><br>
 
 		<input type="submit" value="Отправить данные">

@@ -4,6 +4,10 @@ from random import randint
 from PIL import Image, ImageDraw, ImageFont
 from flask_simple_captcha import CAPTCHA
 from flask_ckeditor import CKEditor
+import json
+#  форма для обратной сзвязи
+from forms import ContactForm
+import plotly.express as px
 
 YOUR_CONFIG = {
     'SECRET_CAPTCHA_KEY': 'LONG_KEY',
@@ -14,18 +18,35 @@ YOUR_CONFIG = {
     'TEXT_COLOR': (0, 255, 0)
 }
 
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "12345"
 ckeditor = CKEditor(app)
 
 SIMPLE_CAPTCHA = CAPTCHA(config=YOUR_CONFIG)
 app = SIMPLE_CAPTCHA.init_app(app)
 
+
+def skibidi(name):
+    connection = sqlite3.connect('grades.db')
+    cursor = connection.cursor()
+
+    cursor.execute(f'select count from visits where name = "{name}";')
+    count = cursor.fetchone()[0]
+    cursor.execute(f'update visits set count = {count + 1} where name = "{name}";')
+
+    connection.commit()
+    connection.close()
+
+
 @app.route('/')
 def main():
+    skibidi('/')
     return render_template('index.html')
 
 @app.get('/laba1')
 def laba1():
+    skibidi('/laba1')
     response = make_response(render_template('laba1.html'))
     print(repr(request.cookies.get('fontsize')), repr(request.cookies.get('fontcolor')))
     # if not request.cookies.get('fontsize'):
@@ -62,6 +83,7 @@ def save_to_file():
 
 @app.get('/laba2')
 def laba2():
+    skibidi('/laba2')
     if not request.cookies.get('laba2_hash'):
         response = make_response('', 301)
         response.headers['Location'] = 'laba2_enter'
@@ -344,6 +366,7 @@ def laba2_logout():
 
 @app.get('/laba3')
 def laba3():
+    skibidi('/laba3')
     new_captcha_dict = SIMPLE_CAPTCHA.create()
     response = make_response(render_template('laba3.html', captcha=new_captcha_dict))
     return response
@@ -412,6 +435,53 @@ def laba3_post():
 
     return render_template('laba3_diagram.html')
 
+@app.get('/laba4')
+def laba4():
+    skibidi('/laba4')
+    form = ContactForm()
+
+    return render_template("laba4.html",
+                           title="index page",
+                           form=form)
+
+@app.route('/laba4send', methods=['POST'])
+def send():
+    form = ContactForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            #  отправить почту, записать в БД и т. д.
+            return json.dumps({'success': 'true', 'msg': 'Ждите звонка!'})
+        else:
+            #  обработать ошибку
+            return json.dumps({'success': 'false', 'msg': 'Ошибка на сервере!'})
+
+
+@app.get('/rgr')
+def rgr():
+    skibidi('/rgr')
+
+    connection = sqlite3.connect('grades.db')
+    cursor = connection.cursor()
+
+    cursor.execute(f'select count from visits;')
+    count = cursor.fetchall()
+    count = [x[0] for x in count]
+
+    connection.commit()
+    connection.close()
+
+    print(count)
+
+    x_data = ['/', '/laba1', '/laba2', '/laba3', '/laba4', '/rgr']
+    y_data = count
+    
+    fig = px.line(x=x_data, y=y_data, title='График посещений страниц моего сайта')
+
+    # Отображаем график на веб-странице
+    graph_html = fig.to_html(full_html=False)
+
+    return render_template('graph.html', graph=graph_html)
+    # return render_template("laba4.html")
 
 if __name__ == '__main__':
     # app.run(host='172.17.5.139', port=5000)

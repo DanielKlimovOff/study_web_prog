@@ -119,6 +119,9 @@ def laba2():
 
 @app.get('/laba2_insert')
 def laba2_insert_get():
+    if not request.cookies.get('laba2_hash'):
+        return "Вы не вошли в акаунт, у вас нет прав совершать действия с БД"
+
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
@@ -145,6 +148,9 @@ def laba2_insert_get():
 
 @app.post('/laba2_insert')
 def laba2_insert_post():
+    if not request.cookies.get('laba2_hash'):
+        return "Вы не вошли в акаунт, у вас нет прав совершать действия с БД"
+
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
@@ -170,6 +176,8 @@ def laba2_insert_post():
 
 @app.get('/laba2_update<int:grade_id>')
 def laba2_update_get(grade_id):
+    if not request.cookies.get('laba2_hash'):
+        return "Вы не вошли в акаунт, у вас нет прав совершать действия с БД"
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
@@ -205,6 +213,8 @@ def laba2_update_get(grade_id):
 
 @app.post('/laba2_update<int:grade_id>')
 def laba2_update_post(grade_id):
+    if not request.cookies.get('laba2_hash'):
+        return "Вы не вошли в акаунт, у вас нет прав совершать действия с БД"
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
@@ -229,6 +239,9 @@ def laba2_update_post(grade_id):
 
 @app.get('/laba2_delete<int:grade_id>')
 def laba2_delete(grade_id):
+    if not request.cookies.get('laba2_hash'):
+        return "Вы не вошли в акаунт, у вас нет прав совершать действия с БД"
+        
     connection = sqlite3.connect('grades.db')
     cursor = connection.cursor()
 
